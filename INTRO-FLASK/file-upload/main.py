@@ -1,9 +1,9 @@
-from flask import Flask, render_template, request, jsonify
-import os
-import time
+from flask import Flask, jsonify,request 
+import os # Diperlukan untuk menyimpan file
+import time # Diperlukan untuk membuat timestamp
 
-# Tentukan folder upload untuk menyimpan file
 UPLOAD_FOLDER = 'static/uploads'
+#ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -14,13 +14,6 @@ def home():
 @app.route('/uploadfile', methods=['GET', 'POST'])
 def uploadfile():
     if request.method == 'POST':
-        # Ambil data dari form
-        # nama = request.form['nama']
-        # email = request.form['email']
-        # hp = request.form['hp']
-        # prodi = request.form['prodi']
-        # foto = request.files['fotos']
-
         # Cek jika ada file yang diunggah
         foto = request.files['foto']
         if foto:
@@ -33,27 +26,31 @@ def uploadfile():
             # Menyimpan file dengan nama unik
             foto_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
             foto.save(foto_path)
-            foto_path = f'uploads/{unique_filename}'  # Menyimpan path relatif
-            # Response JSON jika file berhasil diunggah
-            data = {
-                "status": "success",
-                "message": "File uploaded successfully",
-            }
+            # Menyimpan path relatif
+            foto_path = f'uploads/{unique_filename}' 
+            data = { 
+                "status" : "success", 
+                "message" : "File Uploaded", 
+            } 
+            return jsonify(data) 
         else:
-            # Jika tidak ada file yang diunggah
-            data = {
-                "status": "failed",
-                "message": "No file uploaded"
-            }
-        return jsonify(data)
+            foto_path = None
+            data = { 
+                "status" : "failed", 
+                "message" : "File upload failed", 
+            } 
+            return jsonify(data) 
     
-    # Jika metode GET, beri response dengan instruksi
-    data = {
-        "status": "success",
-        "message": "Pick a foto to upload."
-    }
-    return jsonify(data)
+    # JSON empty
+    data = { 
+        "status" : "success", 
+        "message" : "Pick a foto to upload", 
+    } 
+    return jsonify(data) 
 
-# Keep this as is
+#tambahkan dependensi Flask-RESTful
+#pip install Flask-RESTful
+    
+# keep this as is
 if __name__ == '__main__':
     app.run(debug=True)
